@@ -25,3 +25,22 @@ function operate(operator) {
     divide();
   }
 }
+
+const digitBtn = document.querySelectorAll(".digit");
+const display = document.querySelector("#display");
+
+digitBtn.forEach(digit => {
+  digit.addEventListener("click", e => {
+    if (display.innerText == "0") {
+      if (digit.dataset.action == "decimal") {
+        display.innerText += digit.innerText;
+      } else {
+        display.innerText = digit.innerText;
+      }
+    } else {
+      display.innerText += digit.innerText;
+    }
+  });
+});
+
+
