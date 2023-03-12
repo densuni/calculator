@@ -33,10 +33,11 @@ const display = document.querySelector("#display");
 let num1;
 let num2;
 let operatorChoice;
+let result;
 
 digitBtn.forEach(digit => {
   digit.addEventListener("click", e => {
-    if (num1 == display.innerText)  {
+    if (num1 == display.innerText || result == display.innerText)  {
       display.innerText = digit.innerText;
     } else if (display.innerText == "0") {
       if (digit.dataset.action == "decimal") {
@@ -52,7 +53,7 @@ digitBtn.forEach(digit => {
 
 operatorBtn.forEach(operator => {
   operator.addEventListener("click", e => {
-    num1 = display.innerText;
+    num1 = parseInt(display.innerText);
     operatorChoice = operator.dataset.operator;
   });
 });
@@ -60,8 +61,9 @@ operatorBtn.forEach(operator => {
 actionBtn.forEach(action => {
   action.addEventListener("click", e => {
     if (action.dataset.action == "equals") {
-      num2 = display.innerText;
-      console.log(operate());
+      num2 = parseInt(display.innerText);
+      result = operate();
+      display.innerText = result;
     }
   });
 });
