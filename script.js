@@ -1,17 +1,17 @@
 function add() {
-  return num1 + num2;
+  return firstOperand + secondOperand;
 }
 
 function substract() {
-  return num1 - num2;
+  return firstOperand - secondOperand;
 }
 
 function multiply() {
-  return num1 * num2;
+  return firstOperand * secondOperand;
 }
 
 function divide() {
-  return num1 / num2;
+  return firstOperand / secondOperand;
 }
 
 function operate() {
@@ -31,14 +31,14 @@ const operatorBtn = document.querySelectorAll(".operator");
 const actionBtn = document.querySelectorAll(".action");
 const decimalBtn = document.querySelector('[data-action="decimal"]');
 const display = document.querySelector("#display");
-let num1;
-let num2;
+let firstOperand;
+let secondOperand;
 let operatorChoice;
 let result;
 
 digitBtn.forEach(digit => {
   digit.addEventListener("click", e => {
-    if (num1 == display.innerText || result == display.innerText)  {
+    if (firstOperand == display.innerText || result == display.innerText)  {
       if (digit.dataset.action == "decimal") {
         display.innerText = "0" + digit.innerText;
       } else display.innerText = digit.innerText;
@@ -57,7 +57,13 @@ digitBtn.forEach(digit => {
 
 operatorBtn.forEach(operator => {
   operator.addEventListener("click", e => {
-    num1 = parseFloat(display.innerText);
+    if (firstOperand != null) {
+      secondOperand = parseFloat(display.innerText);
+      firstOperand = operate();
+      display.innerText = firstOperand;
+    } else {
+      firstOperand = parseFloat(display.innerText);
+    }
     operatorChoice = operator.dataset.operator;
     decimalBtn.disabled = false;
   });
@@ -66,7 +72,7 @@ operatorBtn.forEach(operator => {
 actionBtn.forEach(action => {
   action.addEventListener("click", e => {
     if (action.dataset.action == "equals") {
-      num2 = parseFloat(display.innerText);
+      secondOperand = parseFloat(display.innerText);
       result = operate();
       display.innerText = result;
       decimalBtn.disabled = false;
