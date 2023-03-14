@@ -1,55 +1,25 @@
-function add() {
-  return firstOperand + secondOperand;
-}
-
-function substract() {
-  return firstOperand - secondOperand;
-}
-
-function multiply() {
-  return firstOperand * secondOperand;
-}
-
-function divide() {
-  return firstOperand / secondOperand;
-}
-
-function operate() {
-  if (operatorChoice == "add") {
-    return add();
-  } else if (operatorChoice == "substract") {
-    return substract();
-  } else if (operatorChoice == "multiply") {
-    return multiply();
-  } else if (operatorChoice == "divide") {
-    return divide();
-  }
-}
-
-const digitBtn = document.querySelectorAll(".digit");
-const operatorBtn = document.querySelectorAll(".operator");
-const actionBtn = document.querySelectorAll(".action");
-const decimalBtn = document.querySelector('[data-action="decimal"]');
+const btn = document.querySelectorAll("button");
+const digitBtn = document.querySelectorAll('[data-digit]');
+const operatorBtn = document.querySelectorAll('[data-operator]');
+const equalsBtn = document.querySelector('[data-equals]');
+const percentBtn = document.querySelector('[data-percent]');
+const decimalBtn = document.querySelector('[data-decimal]');
+const allClearBtn = document.querySelector('[data-all-clear]');
 const display = document.querySelector("#display");
-let firstOperand;
-let secondOperand;
 let operatorChoice;
-let result;
+let currentValue;
+let initialValue;
+let lastBtnPressed = false;
+
+decimalBtn.addEventListener("click", checkDecimal);
+percentBtn.addEventListener("click", getPercentage);
+allClearBtn.addEventListener("click", allClear);
 
 digitBtn.forEach(digit => {
   digit.addEventListener("click", e => {
-    if (firstOperand == display.innerText || result == display.innerText)  {
-      if (digit.dataset.action == "decimal") {
-        display.innerText = "0" + digit.innerText;
-      } else display.innerText = digit.innerText;
-    } else if (display.innerText == "0") {
-      if (digit.dataset.action == "decimal") {
-        display.innerText += digit.innerText;
-        decimalBtn.disabled = true;
-      } else {
+    if (display.innerText == "0" || initialValue == display.innerText) {
         display.innerText = digit.innerText;
-      }
-    } else {
+    } else { 
       display.innerText += digit.innerText;
     }
   });
@@ -57,25 +27,94 @@ digitBtn.forEach(digit => {
 
 operatorBtn.forEach(operator => {
   operator.addEventListener("click", e => {
-    if (firstOperand != null) {
-      secondOperand = parseFloat(display.innerText);
-      firstOperand = operate();
-      display.innerText = firstOperand;
+    if (lastBtnPressed == true) {
+      return display.innerText;
+    } else if (initialValue != null) { 
+      currentValue = display.innerText;
+      display.innerText = operate(operatorChoice, initialValue, currentValue);
+      initialValue = display.innerText; 
+      currentValue == null;
     } else {
-      firstOperand = parseFloat(display.innerText);
+      initialValue = display.innerText;
     }
     operatorChoice = operator.dataset.operator;
-    decimalBtn.disabled = false;
+    checkLastBtnPressed();
   });
 });
 
-actionBtn.forEach(action => {
-  action.addEventListener("click", e => {
-    if (action.dataset.action == "equals") {
-      secondOperand = parseFloat(display.innerText);
-      result = operate();
-      display.innerText = result;
-      decimalBtn.disabled = false;
-    }
-  });
+equalsBtn.addEventListener("click", e => {
+  if (initialValue == null) {
+    return display.innerText;
+  } else {
+    currentValue = display.innerText;
+    display.innerText = operate(operatorChoice, initialValue, currentValue);
+    initialValue = null;
+  }
 });
+
+function allClear() {
+  initialValue = null;
+  currentValue = null;
+  operatorChoice = null;
+  display.innerText = "0";
+}
+
+function checkLastBtnPressed() {
+  btn.forEach(btn => {
+    btn.addEventListener("click", e => {
+      if (e.target.className == "operator") {
+        lastBtnPressed = true;
+      } else {
+        lastBtnPressed = false;
+      }
+    });
+  });
+}
+
+function checkDecimal () {
+  if (display.innerText.includes(".")) {
+    return display.innerText;
+  } else {
+    display.innerText += ".";
+  }
+}
+
+function getPercentage() {
+  let percentage = (display.innerText / 100) * initialValue;
+  display.innerText = percentage;
+}
+
+function add(a, b) {
+  return a + b;
+}
+
+function substract(a, b) {
+  return a - b;
+}
+
+function multiply(a, b) {
+  return a * b;
+}
+
+function divide(a, b) {
+  return a / b;
+}
+
+function operate(operator, a , b) {
+  a = Number(a);
+  b = Number (b);
+  switch (operator) {
+    case "add":
+      return add(a, b);
+    case "substract":
+      return substract(a, b);
+    case "multiply":
+      return multiply(a, b);
+    case "divide":
+      if (currentValue == "0") {
+        return ("ERROR");
+      } else {
+      return divide(a, b);
+      }
+  }
+}
