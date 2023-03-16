@@ -17,11 +17,12 @@ allClearBtn.addEventListener("click", allClear);
 
 digitBtn.forEach(digit => {
   digit.addEventListener("click", e => {
-    if (display.innerText == "0" || initialValue == display.innerText) {
+    if (display.innerText == "0" || initialValue == display.innerText || currentValue == display.innerText) {
         display.innerText = digit.innerText;
     } else { 
       display.innerText += digit.innerText;
     }
+    lastBtnPressed = false;
   });
 });
 
@@ -38,7 +39,7 @@ operatorBtn.forEach(operator => {
       initialValue = display.innerText;
     }
     operatorChoice = operator.dataset.operator;
-    checkLastBtnPressed();
+    checkLastBtnPressed(e);
   });
 });
 
@@ -48,6 +49,7 @@ equalsBtn.addEventListener("click", e => {
   } else {
     currentValue = display.innerText;
     display.innerText = operate(operatorChoice, initialValue, currentValue);
+    currentValue = display.innerText;
     initialValue = null;
   }
 });
@@ -59,20 +61,16 @@ function allClear() {
   display.innerText = "0";
 }
 
-function checkLastBtnPressed() {
-  btn.forEach(btn => {
-    btn.addEventListener("click", e => {
-      if (e.target.className == "operator") {
-        lastBtnPressed = true;
-      } else {
-        lastBtnPressed = false;
-      }
-    });
-  });
+function checkLastBtnPressed(e) {
+  if (e.target.classList.contains("operator")) {
+    lastBtnPressed = true;
+ } else {
+    lastBtnPressed = false;
+  }
 }
 
 function checkDecimal () {
-  if (display.innerText.includes(".")) {
+  if (display.innerText.includes(".") == true) {
     return display.innerText;
   } else {
     display.innerText += ".";
@@ -80,8 +78,12 @@ function checkDecimal () {
 }
 
 function getPercentage() {
-  let percentage = (display.innerText / 100) * initialValue;
-  display.innerText = percentage;
+  if (initialValue == null) {
+    display.innerText = display.innerText * 0.01;
+  } else {
+    let percentage = (display.innerText / 100) * initialValue;
+    display.innerText = percentage;
+  }
 }
 
 function add(a, b) {
